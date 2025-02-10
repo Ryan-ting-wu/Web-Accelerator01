@@ -1,4 +1,4 @@
-# 網頁加速器 Web Page Accelerator
+# 網頁加速器 (中文版) Web Page Accelerator
 
 ## 描述 Description
 
