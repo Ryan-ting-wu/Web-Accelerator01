@@ -3,7 +3,37 @@
  * 處理使用者介面互動和顯示優化結果
  */
 
+let currentLocale = 'en'; // 預設英文
+
+function getCurrentLocale() {
+  // 獲取瀏覽器語言設定
+  const browserLang = navigator.language || navigator.userLanguage;
+  
+  // 檢查是否支援該語言，如果不支援則使用英文
+  if (locales[browserLang]) {
+    return browserLang;
+  } else if (locales[browserLang.split('-')[0]]) {
+    return browserLang.split('-')[0];
+  }
+  return 'en';
+}
+
+function updateUILanguage() {
+  const locale = locales[currentLocale];
+  
+  // 更新 UI 文字
+  document.getElementById('extensionTitle').textContent = locale.title;
+  document.getElementById('optimizeNow').textContent = locale.optimizeButton;
+  document.getElementById('resetStats').textContent = locale.resetStats;
+  
+  // 更新統計顯示格式
+  updateStats(); // 重新載入統計資料以使用新的語言格式
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    currentLocale = getCurrentLocale();
+    updateUILanguage();
+    
     // 載入並顯示統計數據
     updateStats();
     
@@ -121,10 +151,14 @@ document.addEventListener('DOMContentLoaded', function() {
    * 從 storage 讀取最新統計並更新 UI
    */
   function updateStats() {
+    const locale = locales[currentLocale];
+    
     chrome.storage.local.get(['stats'], function(result) {
       if (result.stats) {
-        document.getElementById('blockedCount').textContent = result.stats.blockedTrackers || 0;
-        document.getElementById('optimizedImages').textContent = result.stats.optimizedImages || 0;
+        document.getElementById('blockedCount').textContent = 
+          `${result.stats.blockedTrackers || 0}${locale.unit.count}`;
+        document.getElementById('optimizedImages').textContent = 
+          `${result.stats.optimizedImages || 0}${locale.unit.images}`;
       }
     });
   }
@@ -134,6 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
    * @param {Object} optimizations - 優化結果物件
    */
   function showOptimizationDetails(optimizations) {
+    const locale = locales[currentLocale];
     console.log('顯示優化詳情:', optimizations);
     
     const details = document.getElementById('lastOptimization');
@@ -161,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
     button.disabled = false;
     button.textContent = `優化完成 ✓ (${durationInSeconds}秒)`;
     setTimeout(() => {
-      button.textContent = '立即優化此頁面';
+      button.textContent = locale.optimizeButton;
     }, 2000);
   }
   
@@ -180,26 +215,25 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 修改錯誤顯示函數
   function showError(message) {
+    const locale = locales[currentLocale];
     hideProgress();  // 確保進度條被隱藏
     
     const button = document.getElementById('optimizeNow');
     button.disabled = false;
     button.style.display = 'block';
-    button.textContent = '立即優化此頁面';
+    button.textContent = locale.optimizeButton;
     
     // 顯示錯誤訊息
     const details = document.getElementById('lastOptimization');
     details.style.display = 'block';
     details.innerHTML = `
       <div class="error-message">
-        <h4>無法優化</h4>
+        <h4>${locale.errors.cannotOptimize}</h4>
         <p>${message}</p>
         <div class="suggestion">
-          建議操作：
+          <h5>${locale.errors.suggestions.title}</h5>
           <ul>
-            <li>請開啟一般網頁（例如：新聞網站、部落格等）</li>
-            <li>重新整理目前頁面後再試</li>
-            <li>確認網頁是否正常載入完成</li>
+            ${locale.errors.suggestions.items.map(item => `<li>${item}</li>`).join('')}
           </ul>
         </div>
       </div>
