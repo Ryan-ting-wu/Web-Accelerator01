@@ -1,0 +1,26 @@
+{
+    "manifest_version": 2,
+    "name": "網頁加速器",
+    "version": "1.0",
+    "description": "一鍵優化網頁速度，包含以下提升瀏覽體驗，清除追蹤器、優化資源載入、記憶體優化。",
+    "permissions": [
+      "webRequest",
+      "webRequestBlocking",
+      "<all_urls>",
+      "tabs",
+      "storage",
+      "notifications",
+      "activeTab",
+      "scripting"
+    ],
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": true
+    },
+    "browser_action": {
+      "default_popup": "popup.html"
+    },
+    "host_permissions": [
+      "<all_urls>"
+    ]
+  } 
