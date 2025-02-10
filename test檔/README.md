@@ -101,6 +101,7 @@ Permissions used in manifest.json:
    - Enable Developer mode
 3. 載入未封裝項目
    - Load unpacked extension
+4. 其他使用方法遊覽器大同小異
 
 ## 使用方式 Usage
 
